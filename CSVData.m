@@ -39,12 +39,13 @@ classdef CSVData < handle
             pks=zeros(1,tarLength);
             
             for m = 1:1:tarLength
-                tmp = find(abs(pksLoc - vector(m))<= tolerance);
-                if(tmp)
+                dLoc = abs(pksLoc - vector(m));
+                [~,index] = sort(dLoc);
+                if dLoc(index(1)) <= tolerance
                     b = b+1;
-                    loc(m)=pksLoc(tmp);
-                    pks(m)=pksInts(tmp);
-                end            
+                    loc(m)=pksLoc(index(1));
+                    pks(m)=pksInts(index(1));
+                end    
             end
             if isempty(varargin)
                 minFitNum = tarLength;

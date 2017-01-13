@@ -55,13 +55,14 @@ function App_OpeningFcn(hObject, eventdata, handles, varargin)
 set(handles.ed_Peaks,'Enable','off');
 set(handles.ed_Tolerance,'Enable','off');
 set(handles.ed_MIR,'Enable','off');
+set(handles.ed_MinFit,'Enable','off');
 set(handles.btn_LoadFiles,'Enable','off');
 set(handles.btn_ClearAll,'Enable','off');
 set(handles.btn_FindPeaks,'Enable','off');
 set(handles.btn_ViewResult,'Enable','off');
 set(handles.btn_SaveResult,'Enable','off');
 handles.output = hObject;
-handles.logger = Logger(9,'Welcome to Mass Peaker!');
+handles.logger = Logger(10,'Welcome to Mass Peaker!');
 set(handles.tx_Log,'String',handles.logger.stringContent);
 handles.peaks = [];
 handles.tolerance = -1;
@@ -142,10 +143,10 @@ function ed_Peaks_Callback(hObject, eventdata, handles)
 % hObject    handle to ed_Peaks (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-tmpStr = split(get(hObject,'String'),',');
+tmpStr = split(get(hObject,'String'),' ');
 tmpNum = str2double(tmpStr);
 if isnan(tmpNum)
-    warndlg('Cannot Parse Input to mass, Please split each mass value by '',''!');
+    warndlg('Cannot Parse Input to mass, Please split each mass value by ''space key''!');
 else
     handles.peaks = tmpNum;
     guidata(hObject,handles);
@@ -248,6 +249,7 @@ set(handles.btn_FindPeaks,'Enable','on');
 set(handles.ed_Peaks,'Enable','on');
 set(handles.ed_Tolerance,'Enable','on');
 set(handles.ed_MIR,'Enable','on');
+set(handles.ed_MinFit,'Enable','on');
 guidata(hObject,handles);
 
 
@@ -256,6 +258,29 @@ function btn_ClearAll_Callback(hObject, eventdata, handles)
 % hObject    handle to btn_ClearAll (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+set(handles.ed_Peaks,'String','','Enable','off');
+set(handles.ed_Tolerance,'String','','Enable','off');
+set(handles.ed_MIR,'String','','Enable','off');
+set(handles.ed_MinFit,'String','','Enable','off');
+
+set(handles.btn_LoadFiles,'Enable','off');
+set(handles.btn_FindPeaks,'Enable','off');
+set(handles.btn_ViewResult,'Enable','off');
+set(handles.btn_SaveResult,'Enable','off');
+set(handles.btn_OpenFolder,'Enable','on');
+
+handles.logger.addString('Clear All data');
+set(handles.tx_Log,'String',handles.logger.stringContent);
+
+handles.peaks = [];
+handles.tolerance = -1;
+handles.MIR = -1;
+handles.minFit = -1;
+
+handles.container = [];
+
+set(handles.btn_ClearAll,'Enable','off');
+guidata(hObject, handles);
 
 
 

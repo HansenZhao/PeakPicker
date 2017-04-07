@@ -27,9 +27,16 @@ classdef CSVData < handle
         
         function [b,loc,pks] = hasPeaks(obj,vector,tolerance,minIntensityRatio,varargin)
             [pksInts,pksLoc]=findpeaks(obj.massIntensity);
+            % in case no peak found
+            if isempty(pksLoc)
+                b = 0;
+                loc = 0;
+                pks = 0;
+                return;
+            end
             pksLoc = obj.mass(pksLoc);
             
-            tmp = (pksInts > (obj.maxIntensity * minIntensityRatio));
+            tmp = (pksInts > (max(pksInts) * minIntensityRatio));
             pksInts = pksInts(tmp);
             pksLoc = pksLoc(tmp);
             

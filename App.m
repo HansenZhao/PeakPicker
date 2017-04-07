@@ -202,6 +202,7 @@ if ((~isempty(handles.peaks))&&...
     
     handles.logger.addString(strcat('Find',32,num2str(handles.findNum),32,'files!'));
     set(handles.tx_Log,'String',handles.logger.stringContent);
+    
     guidata(hObject,handles);
     set(handles.btn_SaveResult,'Enable','on');
 else
@@ -214,6 +215,39 @@ function btn_ViewResult_Callback(hObject, eventdata, handles)
 % hObject    handle to btn_ViewResult (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+prompt = {'Min Peak Intensity','Resolution(suggest: 600-6000)','Min Peak Width(suggest: 1-8)'};
+title = 'MS1-MS2 Map Setting';
+numLines = 1;
+defaultAns = {'0.05','1000','2'};
+answer = inputdlg(prompt,title,numLines,defaultAns);
+if ~isempty(answer)
+    [~,hf,hm] = handles.container.plotMS1MS2(str2num(answer{1}),str2num(answer{3}),str2num(answer{2}));
+    h0  = uicontrol(hf,'Style', 'popup',...
+           'String', {'parula','jet','hsv','hot','cool','gray'},...
+           'Position', [20 80 100 50],...
+           'Callback', @setmap);   
+    tmp = caxis;
+    h1 = uicontrol(hf,'String','Higher','Style','Slider','Position',[20,50,100,20],'Min',0,'Max',500,'Callback',@onSilder);
+    set(h1,'Value',tmp(2));
+    h2 = uicontrol(hf,'String','Lower','Style','Slider','Position',[20,20,100,20],'Min',-300,'Max',0,'Callback',@onSilder);
+    set(h2,'Value',tmp(1));
+end
+
+function onSilder(source,event)
+tmp = caxis;
+if strcmp(source.String,'Lower')
+    caxis([source.Value,tmp(2)]);
+else
+    caxis([tmp(1),source.Value]);
+end
+
+function setmap(source,event)
+val = source.Value;
+maps = source.String;
+newmap = maps{val};
+colormap(newmap);
+
+
 
 
 % --- Executes on button press in btn_OpenFolder.
@@ -250,6 +284,7 @@ set(handles.ed_Peaks,'Enable','on');
 set(handles.ed_Tolerance,'Enable','on');
 set(handles.ed_MIR,'Enable','on');
 set(handles.ed_MinFit,'Enable','on');
+set(handles.btn_ViewResult,'Enable','on');
 guidata(hObject,handles);
 
 

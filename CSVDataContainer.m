@@ -190,6 +190,7 @@ classdef CSVDataContainer < handle
         function [resMat,hf,hm] = plotMS1MS2(obj,threshold,minPW,varargin)
            % X : MS1
            % Y : MS2
+           hbar = waitbar(0,'Begin Render...');
             if isempty(varargin)
                 total = 1000;
             else
@@ -199,17 +200,10 @@ classdef CSVDataContainer < handle
             [ms1,msInts1] = obj.getMS1(0.05);
             figure;
             plot(ms1,msInts1);
-%             [pkInts,pkLocs,pWs] = findpeaks(msInts1,ms1);
-%             % filter too small noise
-%             filter = pkInts > (threshold * max(pkInts));
-%             pkInts = pkInts(filter);
-%             pkLocs = pkLocs(filter);
-%             pWs = pWs(filter);
-%             
-%             gridW = obj.getGridWidth(obj.minMS1,obj.maxMS1,max(pWs),total);
             [pkInts,pkLocs,pWs,gridW] = obj.getValidPks(ms1,msInts1,total,'MS1',threshold);
             gridW = max(gridW,minPW);
             MS1C = gridW+1;
+            waitbar(0.05,hbar,'Begin Parse MS1');
             for m = 1:1:length(pkLocs)
                 [pkM,pkC,pkW] = obj.getPeakMat('MS1',pkLocs(m),pWs(m),total,minPW);
                 %disp(strcat(num2str(max(pkM(:))),32,num2str(1000 * pkInts(m)/max(pkInts))));
@@ -217,6 +211,7 @@ classdef CSVDataContainer < handle
             end
             offset = 2*gridW+1;
             MS2total = total - offset;
+            waitbar(0.1,hbar,'Begin Parse MS2');
             for m = 1:1:length(obj.csvMS2DataArray)
                 parentMass = obj.csvMS2DataArray{m}.parentMass;
                 parentLoc = round(total * (parentMass - obj.minMS1)/(obj.maxMS1 - obj.minMS1));
@@ -232,7 +227,10 @@ classdef CSVDataContainer < handle
                     pkC = pkC + offset;
                     resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM * (100 * pkInts(n)/max(pkInts));
                 end
+                waitbar(0.1 + 0.8 * m/length(obj.csvMS2DataArray),hbar,'Parsing MS2...');
             end
+            
+            waitbar(0.9,hbar,'Begin Rendering.');
             
             xticks = obj.minMS1:(obj.maxMS1 - obj.minMS1)/(total-1):obj.maxMS1;
             yticks = obj.minMS2:(obj.maxMS2 - obj.minMS2)/(total-1):obj.maxMS2;
@@ -242,11 +240,13 @@ classdef CSVDataContainer < handle
             hf = figure('Position',[100,0,scrsz(4),scrsz(4)-100]);
             hm = surf(X,Y,resMat(1:total,1:total)','EdgeColor','none');
             colorbar;
+            waitbar(1,hbar,'Done!');
             xlim([obj.minMS1,obj.maxMS1]);
             ylim([obj.minMS2,obj.maxMS2]);
             xlabel('MS1');
             ylabel('MS2');
             box on;
+            close(hbar);
         end
         
         

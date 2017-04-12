@@ -221,16 +221,7 @@ numLines = 1;
 defaultAns = {'0.05','1000','2'};
 answer = inputdlg(prompt,title,numLines,defaultAns);
 if ~isempty(answer)
-    [~,hf,hm] = handles.container.plotMS1MS2(str2num(answer{1}),str2num(answer{3}),str2num(answer{2}));
-    h0  = uicontrol(hf,'Style', 'popup',...
-           'String', {'parula','jet','hsv','hot','cool','gray'},...
-           'Position', [20 70 100 50],...
-           'Callback', @setmap);   
-    tmp = caxis;
-    h1 = uicontrol(hf,'String','Higher','Style','Slider','Position',[20,50,100,20],'Min',0,'Max',500,'Callback',@onSilder);
-    set(h1,'Value',max(min(tmp(2),500),0));
-    h2 = uicontrol(hf,'String','Lower','Style','Slider','Position',[20,20,100,20],'Min',-300,'Max',0,'Callback',@onSilder);
-    set(h2,'Value',max(min(tmp(2),0),-300));
+    handles.container.plotMS1MS2(str2num(answer{1}),str2num(answer{3}),str2num(answer{2}));
 end
 
 function onSilder(source,event)

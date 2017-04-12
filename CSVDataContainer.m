@@ -1,4 +1,4 @@
-classdef CSVDataContainer < handle
+ classdef CSVDataContainer < handle
     
     properties
         folderPath;
@@ -237,14 +237,20 @@ classdef CSVDataContainer < handle
             
             [X,Y] = meshgrid(xticks,yticks);
             scrsz = get(groot,'ScreenSize');
-            hf = figure('Position',[100,0,scrsz(4),scrsz(4)-100]);
-            hm = surf(X,Y,resMat(1:total,1:total)','EdgeColor','none');
+            h = AdFig1([0,max(max(resMat(1:total,1:total)))]);
+            for m = 1:1:length(h.Children)
+                if isa(h.Children(m),'matlab.graphics.axis.Axes')
+                    hm = surf(h.Children(m),X,Y,resMat(1:total,1:total)','EdgeColor','none');
+                end
+            end
             colorbar;
             waitbar(1,hbar,'Done!');
             xlim([obj.minMS1,obj.maxMS1]);
             ylim([obj.minMS2,obj.maxMS2]);
+            zlim([0,max(max(resMat(1:total,1:total)))])
             xlabel('MS1');
             ylabel('MS2');
+            grid on;
             box on;
             close(hbar);
         end

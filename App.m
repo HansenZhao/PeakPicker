@@ -295,7 +295,7 @@ set(handles.btn_ViewResult,'Enable','off');
 set(handles.btn_SaveResult,'Enable','off');
 set(handles.btn_OpenFolder,'Enable','on');
 
-handles.logger.addString('Clear All data');
+handles.logger.clearLogger();
 set(handles.tx_Log,'String',handles.logger.stringContent);
 
 handles.peaks = [];

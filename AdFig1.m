@@ -88,8 +88,17 @@ function Btn_BGColor_Callback(hObject, eventdata, handles)
 % hObject    handle to Btn_BGColor (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-c = uisetcolor();
-if length(c) == 3
+%c = uisetcolor();
+prompt = {'R(0-1 or 0-255)','G(0-1 or 0-255)','B(0-1 or 0-255)'};
+title = 'RGB setting';
+numLines = 1;
+defaultAns = {'0.94','0.94','0.94'};
+answer = inputdlg(prompt,title,numLines,defaultAns);
+if ~isempty(answer)
+    c = [str2num(answer{1}),str2num(answer{2}),str2num(answer{3})];
+    if max(c) > 1
+        c = c/255;
+    end
     set(handles.axes1,'Color',c);
 end
 
@@ -376,6 +385,7 @@ function Btn_Save_Callback(hObject, eventdata, handles)
 [fileName,filePath,index] = uiputfile('*.png','Save png...','default');
 if index
     %savefig(handles.figure1,strcat(filePath,fileName));
-    saveas(handles.figure1,strcat(filePath,fileName));
+    %saveas(handles.figure1,strcat(filePath,fileName));
+    saveas(handles.axes1,strcat(filePath,fileName));
     disp(strcat('File saved:',32,filePath,fileName));
 end

@@ -24,6 +24,11 @@ classdef Logger < handle
             obj.stringContent{obj.curPoint} = cont;
             obj.curPoint = obj.curPoint + 1;
         end
+        
+        function [] = clearLogger(obj)
+            obj.stringContent = cell(obj.maxLength,1);
+            obj.curPoint = 1;
+        end
     end
     
 end

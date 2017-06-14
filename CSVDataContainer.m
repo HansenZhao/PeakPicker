@@ -225,7 +225,13 @@
                 for n = 1:1:length(pkLocs)
                     [pkM,pkC,pkW] = obj.getPeakMat('MS2',pkLocs(n),pWs(n),MS2total,minPW);
                     pkC = pkC + offset;
-                    resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM * (100 * pkInts(n)/max(pkInts));
+                    if parentLoc <= pkW
+                        resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
+                        resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM((pkW-parentLoc+2):end,:) * (100 * pkInts(n)/max(pkInts));
+                    else
+                        resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
+                        resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM * (100 * pkInts(n)/max(pkInts));
+                    end        
                 end
                 waitbar(0.1 + 0.8 * m/length(obj.csvMS2DataArray),hbar,'Parsing MS2...');
             end
@@ -266,6 +272,28 @@
             mass = obj.minMS1:step:obj.maxMS1;
             msInts = zeros(1,length(mass));
             for m = 1:1:L
+                data = obj.csvMS1DataArray{m};
+                if data.maxIntensity >= threshold * obj.maxMS1Intensity
+                    try
+                        tmp = interp1(data.mass,data.massIntensity,mass);
+                        tmp(isnan(tmp)) = 0;
+                        msInts = msInts + tmp;
+                    catch
+                    end
+                end            
+            end
+        end
+        
+        function [mass,msInts] = getNumMS1(obj,threshold,ratio,varargin)
+            if nargin == 2
+                step = 0.01;
+            else
+                step = varargin{1};
+            end
+            L = length(obj.csvMS1DataArray);
+            mass = obj.minMS1:step:obj.maxMS1;
+            msInts = zeros(1,length(mass));
+            for m = 1:1:round(L*ratio)
                 data = obj.csvMS1DataArray{m};
                 if data.maxIntensity >= threshold * obj.maxMS1Intensity
                     try

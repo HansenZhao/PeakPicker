@@ -215,13 +215,13 @@ function btn_ViewResult_Callback(hObject, eventdata, handles)
 % hObject    handle to btn_ViewResult (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-prompt = {'Min Peak Intensity','Resolution(suggest: 600-6000)','Min Peak Width(suggest: 1-8)'};
+prompt = {'Min Peak Intensity','Resolution(suggest: 600-6000)','Min Peak Width(suggest: 1-8)','max(MS2)/max(MS1)'};
 title = 'MS1-MS2 Map Setting';
 numLines = 1;
-defaultAns = {'0.05','1000','2'};
+defaultAns = {'0.05','1000','2','1'};
 answer = inputdlg(prompt,title,numLines,defaultAns);
 if ~isempty(answer)
-    handles.container.plotMS1MS2(str2num(answer{1}),str2num(answer{3}),str2num(answer{2}));
+    handles.container.plotMS1MS2(str2num(answer{1}),str2num(answer{3}),str2num(answer{4}),str2num(answer{2}));
 end
 
 function onSilder(source,event)

@@ -187,7 +187,7 @@
         end 
         
         %% getMS1MS2Map
-        function [resMat,hf,hm] = plotMS1MS2(obj,threshold,minPW,varargin)
+        function [resMat,hf,hm] = plotMS1MS2(obj,threshold,minPW,MS2Ratio,varargin)
            % X : MS1
            % Y : MS2
            hbar = waitbar(0,'Begin Render...');
@@ -207,7 +207,11 @@
             for m = 1:1:length(pkLocs)
                 [pkM,pkC,pkW] = obj.getPeakMat('MS1',pkLocs(m),pWs(m),total,minPW);
                 %disp(strcat(num2str(max(pkM(:))),32,num2str(1000 * pkInts(m)/max(pkInts))));
-                resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) = resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) + pkM * (300 * pkInts(m)/max(pkInts));
+                resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) = max(resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))),pkM * (100 * pkInts(m)/max(pkInts)));
+                %resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) = pkM * (100 * pkInts(m)/max(pkInts));
+                if pkInts(m)/max(pkInts) == 1
+                    disp('s');
+                end
             end
             offset = 2*gridW+1;
             MS2total = total - offset;
@@ -226,11 +230,17 @@
                     [pkM,pkC,pkW] = obj.getPeakMat('MS2',pkLocs(n),pWs(n),MS2total,minPW);
                     pkC = pkC + offset;
                     if parentLoc <= pkW
+                        %resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
+                        %resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM((pkW-parentLoc+2):end,:) * (100 * pkInts(n)/max(pkInts));
                         resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
-                        resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM((pkW-parentLoc+2):end,:) * (100 * pkInts(n)/max(pkInts));
+                        max(resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM((pkW-parentLoc+2):end,:) * (100 * MS2Ratio * pkInts(n)/max(pkInts)));
+                        %resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = pkM((pkW-parentLoc+2):end,:) * (100 * MS2Ratio * pkInts(n)/max(pkInts))*0;
                     else
+                        %resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
+                        %resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM * (100 * pkInts(n)/max(pkInts));
                         resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
-                        resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM * (100 * pkInts(n)/max(pkInts));
+                        max(resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM * (100 * MS2Ratio * pkInts(n)/max(pkInts)));
+                        %resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = pkM * (100 * MS2Ratio * pkInts(n)/max(pkInts))*0;
                     end        
                 end
                 waitbar(0.1 + 0.8 * m/length(obj.csvMS2DataArray),hbar,'Parsing MS2...');

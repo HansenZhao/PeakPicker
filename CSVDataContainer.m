@@ -198,7 +198,7 @@
             end
             resMat = zeros(total,total+minPW);
             [ms1,msInts1] = obj.getMS1(0.05);
-            figure;
+            hf = figure;
             plot(ms1,msInts1);
             [pkInts,pkLocs,pWs,gridW] = obj.getValidPks(ms1,msInts1,total,'MS1',threshold);
             gridW = max(gridW,minPW);
@@ -247,6 +247,16 @@
             end
             
             waitbar(0.9,hbar,'Begin Rendering.');
+            
+            choice = questdlg('Do you want to save raw image data as file',...
+                              'MS Peaker',...
+                              'Yes,Please','No,Thanks','No,Thanks');
+            if strcmp(choice,'Yes,Please')
+                [fn,fp] = uiputfile('*.csv');
+                if ischar(fn)
+                    csvwrite(strcat(fp,fn),resMat);
+                end
+            end
             
             xticks = obj.minMS1:(obj.maxMS1 - obj.minMS1)/(total-1):obj.maxMS1;
             yticks = obj.minMS2:(obj.maxMS2 - obj.minMS2)/(total-1):obj.maxMS2;

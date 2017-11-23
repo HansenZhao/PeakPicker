@@ -207,7 +207,8 @@
             for m = 1:1:length(pkLocs)
                 [pkM,pkC,pkW] = obj.getPeakMat('MS1',pkLocs(m),pWs(m),total,minPW);
                 %disp(strcat(num2str(max(pkM(:))),32,num2str(1000 * pkInts(m)/max(pkInts))));
-                resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) = max(resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))),pkM * (100 * pkInts(m)/max(pkInts)));
+                %resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) = max(resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))),pkM * (100 * pkInts(m)/max(pkInts)));
+                resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) = max(resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))),pkM * pkInts(m));
                 %resMat((pkC-pkW):1:(pkC+pkW),((MS1C-pkW):1:(MS1C+pkW))) = pkM * (100 * pkInts(m)/max(pkInts));
                 if pkInts(m)/max(pkInts) == 1
                     disp('s');
@@ -232,14 +233,18 @@
                     if parentLoc <= pkW
                         %resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
                         %resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM((pkW-parentLoc+2):end,:) * (100 * pkInts(n)/max(pkInts));
+                        %resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
+                        %max(resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM((pkW-parentLoc+2):end,:) * (100 * MS2Ratio * pkInts(n)/max(pkInts)));
                         resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
-                        max(resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM((pkW-parentLoc+2):end,:) * (100 * MS2Ratio * pkInts(n)/max(pkInts)));
+                        max(resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM((pkW-parentLoc+2):end,:) * pkInts(n));
                         %resMat(1:1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = pkM((pkW-parentLoc+2):end,:) * (100 * MS2Ratio * pkInts(n)/max(pkInts))*0;
                     else
                         %resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
                         %resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) + pkM * (100 * pkInts(n)/max(pkInts));
+                        %resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
+                        %max(resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM * (100 * MS2Ratio * pkInts(n)/max(pkInts)));
                         resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = ...
-                        max(resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM * (100 * MS2Ratio * pkInts(n)/max(pkInts)));
+                        max(resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))),pkM * pkInts(n));
                         %resMat((parentLoc-pkW):1:(parentLoc+pkW),((pkC-pkW):1:(pkC+pkW))) = pkM * (100 * MS2Ratio * pkInts(n)/max(pkInts))*0;
                     end        
                 end

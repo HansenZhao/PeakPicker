@@ -1,4 +1,4 @@
-function [ mat ] = imagecsv2mat(isPCA)
+function [ mat,label ] = imagecsv2mat(isPCA)
     %UNTITLED Summary of this function goes here
     %   Detailed explanation goes here
     if ~exist('isPCA','var')
@@ -9,10 +9,13 @@ function [ mat ] = imagecsv2mat(isPCA)
         validFile = ls(strcat(fp,'\*.csv'));
         L = size(validFile,1);
         mat = cell(L,1);
+        label = cell(L,1)
         fprintf(1,'Find %d files\n',L);
         for m = 1:1:L
-            data = importdata(strcat(fp,'\',strtrim(validFile(m,:))));
+        	tag = strtrim(validFile(m,:));
+            data = importdata(strcat(fp,'\',tag));
             mat{m} = data(:)';
+            label{m} = tag;
         end
         mat = cell2mat(mat);
         if isPCA > 0

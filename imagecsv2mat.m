@@ -9,13 +9,14 @@ function [ mat,label ] = imagecsv2mat(isPCA)
         validFile = ls(strcat(fp,'\*.csv'));
         L = size(validFile,1);
         mat = cell(L,1);
-        label = cell(L,1)
+        label = cell(L,1);
         fprintf(1,'Find %d files\n',L);
         for m = 1:1:L
         	tag = strtrim(validFile(m,:));
             data = importdata(strcat(fp,'\',tag));
             mat{m} = data(:)';
-            label{m} = tag;
+            tag = strsplit(tag,'.');
+            label{m} = tag{1};
         end
         mat = cell2mat(mat);
         if isPCA > 0
